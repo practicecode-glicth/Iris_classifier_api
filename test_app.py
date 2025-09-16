@@ -28,4 +28,3 @@ def test_predict_endpoint_invalid_input(client):
     )
     assert response.status_code == 400  # Check if status is Bad Request
     assert "error" in response.json  # Check for error key in response
-
