@@ -1,29 +1,35 @@
-# .github/workflows/cicd.yml
-name: CI/CD Pipeline  # Name of the workflow
+name: CI/CD Pipeline
 
-on:  # Triggers for the workflow
+on:
   push:
-    branches: [ main ]  # Run on pushes to main branch
+    branches: [ main ]
   pull_request:
-    branches: [ main ]  # Run on pull requests to main
+    branches: [ main ]
 
 jobs:
-  test:  # Job for running unit tests
-    runs-on: ubuntu-latest  # Use latest Ubuntu runner
+  test:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code  # Step to clone the repository
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python  # Step to install Python
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'  # Specify Python version
+        python-version: '3.11'
 
-    - name: Install dependencies  # Step to install libraries
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+        # ensure pytest is available
+        python -m pip install pytest
 
-    - name: Run tests  # Step to execute pytest
-      run: pytest test_app.py
+    - name: Show installed packages (debug)
+      run: |
+        python -m pip show pytest || true
+        python -m pip list | sed -n '1,200p'
+
+    - name: Run tests
+      run: python -m pytest -q
